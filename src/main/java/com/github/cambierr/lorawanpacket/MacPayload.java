@@ -43,7 +43,6 @@ public class MacPayload {
     public FHDR fhdr;
     public byte fPort;
     public byte[] payload;
-    public byte[] clearPayload;
     public Direction dir;
 
     public MacPayload(ByteBuffer _raw, Direction _dir) throws MalformedPacketException {
@@ -63,11 +62,6 @@ public class MacPayload {
         }
     }
 
-    public MacPayload(ByteBuffer _raw, Direction _dir, byte[] _appSKey) throws MalformedPacketException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        this(_raw, _dir);
-        clearPayload = getClearPayLoad(_appSKey);
-    }
-
     public int length() {
         return fhdr.length() + 1 + payload.length;
     }
@@ -78,7 +72,7 @@ public class MacPayload {
         _bb.put(payload);
     }
 
-    private byte[] getClearPayLoad(byte[] _appSKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] clearPayLoad(byte[] _appSKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         int k = (int) Math.ceil(payload.length / 16.0);
         ByteBuffer a = ByteBuffer.allocate(16 * k);
         a.order(ByteOrder.LITTLE_ENDIAN);

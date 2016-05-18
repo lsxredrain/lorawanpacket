@@ -47,7 +47,7 @@ public enum MType {
     private final Class<? extends FRMPayload> mapper;
 
     public static MType from(byte _mhdr) throws MalformedPacketException {
-        byte mType = (byte) -((_mhdr >> 5) & 0x07);
+        byte mType = (byte) ((_mhdr >> 5) & 0x07);
         for (MType v : values()) {
             if (v.value == mType) {
                 return v;

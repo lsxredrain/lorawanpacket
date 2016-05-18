@@ -35,7 +35,7 @@ public class PhyPayload {
     private byte mhdr;
     private MacPayload macPayload;
     private Direction direction;
-    private byte[] mic;
+    private byte[] mic = new byte[4];
 
     public PhyPayload(ByteBuffer _raw, Direction _dir) throws MalformedPacketException {
         _raw.order(ByteOrder.LITTLE_ENDIAN);
@@ -45,6 +45,7 @@ public class PhyPayload {
         direction = _dir;
         mhdr = _raw.get();
         macPayload = new MacPayload(this, _raw);
+        _raw.get(mic);
     }
 
     public PhyPayload(Direction _dir) {

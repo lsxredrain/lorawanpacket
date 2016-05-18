@@ -25,11 +25,6 @@ package com.github.cambierr.lorawanpacket;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
@@ -37,45 +32,69 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class PhyPayload {
 
-    public byte mhdr;
-    public MacPayload macPayload;
-    public byte[] mic = new byte[4];
-    public Direction dir;
+    private byte mhdr;
+    private MacPayload macPayload;
+    private Direction direction;
+    private byte[] mic;
 
-    public PhyPayload(ByteBuffer _raw, Direction _dir, byte[] _nwkSKey) throws MalformedPacketException, InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+    public PhyPayload(ByteBuffer _raw, Direction _dir) throws MalformedPacketException {
         _raw.order(ByteOrder.LITTLE_ENDIAN);
         if (_raw.remaining() < 12) {
             throw new MalformedPacketException();
         }
-        dir = _dir;
+        direction = _dir;
         mhdr = _raw.get();
-        macPayload = new MacPayload(_raw, _dir);
-        _raw.get(mic);
-        if (!Arrays.equals(mic, computeMic(_nwkSKey))) {
-            throw new MalformedPacketException("mic");
-        }
+        macPayload = new MacPayload(this, _raw);
     }
 
-    public final byte[] computeMic(byte[] _nwkSKey) throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        ByteBuffer body = ByteBuffer.allocate(1 + macPayload.length() + 16);
-        body.order(ByteOrder.LITTLE_ENDIAN);
+    public MType getMType() throws MalformedPacketException {
+        return MType.from(mhdr);
+    }
 
-        body.put((byte) 0x49);
-        body.put(new byte[]{0x00, 0x00, 0x00, 0x00});
-        body.put(dir.value());
-        body.put(macPayload.fhdr.devAddr);
-        body.putShort(macPayload.fhdr.fCnt);
-        body.put(new byte[]{0x00, 0x00});
-        body.put((byte) 0x00);
-        body.put((byte) (1 + macPayload.length()));
+    public MajorVersion getMajorVersion() throws MalformedPacketException {
+        return MajorVersion.from(mhdr);
+    }
 
-        body.put(mhdr);
-        macPayload.toRaw(body);
+    public byte getMHDR() {
+        return mhdr;
+    }
 
-        AesCmac aesCmac = new AesCmac();
-        aesCmac.init(new SecretKeySpec(_nwkSKey, "AES"));
-        aesCmac.updateBlock(body.array());
-        return Arrays.copyOfRange(aesCmac.doFinal(), 0, 4);
+    public PhyPayload setMHDR(byte _mhdr) {
+        mhdr = _mhdr;
+        return this;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public PhyPayload setDirection(Direction _dir) {
+        direction = _dir;
+        return this;
+    }
+
+    public MacPayload getMacPayload() {
+        return macPayload;
+    }
+
+    public PhyPayload setMacPayload(MacPayload _macPayload) {
+        macPayload = _macPayload;
+        return this;
+    }
+
+    public void toRaw(ByteBuffer _bb) {
+        _bb.put(mhdr);
+        macPayload.toRaw(_bb);
+        _bb.put(mic);
+    }
+
+    public byte[] getMic() {
+        return mic;
+    }
+
+    public PhyPayload setMic(byte[] _mic) {
+        this.mic = _mic;
+        return this;
     }
 
 }

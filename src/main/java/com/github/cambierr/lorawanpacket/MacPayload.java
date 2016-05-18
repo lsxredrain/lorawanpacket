@@ -23,16 +23,9 @@
  */
 package com.github.cambierr.lorawanpacket;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
@@ -40,62 +33,84 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class MacPayload {
 
-    public FHDR fhdr;
-    public byte fPort;
-    public byte[] payload;
-    public Direction dir;
+    private FHDR fhdr;
+    private byte fPort;
+    private FRMPayload payload;
+    private PhyPayload phy;
 
-    public MacPayload(ByteBuffer _raw, Direction _dir) throws MalformedPacketException {
+    public MacPayload(PhyPayload _phy, ByteBuffer _raw) throws MalformedPacketException {
+        phy = _phy;
+        _raw.order(ByteOrder.LITTLE_ENDIAN);
         if (_raw.remaining() < 1) {
             throw new MalformedPacketException();
         }
-        dir = _dir;
         fhdr = new FHDR(_raw);
         //bigger than 4, since the MIC if after
         if (_raw.remaining() > 4) {
             fPort = _raw.get();
-            payload = new byte[_raw.remaining() - 4];
-            _raw.get(payload);
+            Class<? extends FRMPayload> mapper = phy.getMType().getMapper();
+            try {
+                payload = mapper.getConstructor(MacPayload.class, ByteBuffer.class).newInstance(this, _raw);
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new RuntimeException("Could not create FRMPayload", ex);
+            }
         } else {
             fPort = 0;
-            payload = new byte[0];
+            payload = null;
         }
     }
 
     public int length() {
-        return fhdr.length() + 1 + payload.length;
+        if (payload == null) {
+            return fhdr.length();
+        }
+        return fhdr.length() + 1 + payload.length();
     }
 
     public void toRaw(ByteBuffer _bb) {
         fhdr.toRaw(_bb);
-        _bb.put(fPort);
-        _bb.put(payload);
+        if (payload != null) {
+            _bb.put(fPort);
+            payload.toRaw(_bb);
+        }
     }
 
-    public byte[] clearPayLoad(byte[] _appSKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        int k = (int) Math.ceil(payload.length / 16.0);
-        ByteBuffer a = ByteBuffer.allocate(16 * k);
-        a.order(ByteOrder.LITTLE_ENDIAN);
-        for (int i = 1; i <= k; i++) {
-            a.put((byte) 0x01);
-            a.put(new byte[]{0x00, 0x00, 0x00, 0x00});
-            a.put(dir.value());
-            a.put(fhdr.devAddr);
-            a.putShort(fhdr.fCnt);
-            a.put(new byte[]{0x00, 0x00});
-            a.put((byte) 0x00);
-            a.put((byte) i);
-        }
-        Key aesKey = new SecretKeySpec(_appSKey, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
-        byte[] s = cipher.doFinal(a.array());
-        byte[] paddedPayload = new byte[16 * k];
-        System.arraycopy(payload, 0, paddedPayload, 0, payload.length);
-        byte[] plainPayload = new byte[payload.length];
-        for (int i = 0; i < payload.length; i++) {
-            plainPayload[i] = (byte) (s[i] ^ paddedPayload[i]);
-        }
-        return plainPayload;
+    public FHDR getFhdr() {
+        return fhdr;
     }
+
+    public MacPayload setFhdr(FHDR _fhdr) {
+        this.fhdr = _fhdr;
+        return this;
+    }
+
+    public byte getfPort() {
+        return fPort;
+    }
+
+    public MacPayload setfPort(byte _fPort) {
+        this.fPort = _fPort;
+        return this;
+    }
+
+    public FRMPayload getPayload() {
+        return payload;
+    }
+
+    public MacPayload setPayload(FRMPayload _payload) {
+        this.payload = _payload;
+        return this;
+    }
+
+    public PhyPayload getPhyPayload() {
+        return phy;
+    }
+
+    public MacPayload setPhyPayload(PhyPayload _phy) {
+        this.phy = _phy;
+        return this;
+    }
+
+    
+
 }

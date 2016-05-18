@@ -59,6 +59,10 @@ public class MacPayload {
             payload = null;
         }
     }
+    
+    public MacPayload(PhyPayload _phy){
+        phy = _phy;
+    }
 
     public int length() {
         if (payload == null) {

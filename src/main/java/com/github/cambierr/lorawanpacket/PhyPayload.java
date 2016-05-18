@@ -47,6 +47,10 @@ public class PhyPayload {
         macPayload = new MacPayload(this, _raw);
     }
 
+    public PhyPayload(Direction _dir) {
+        direction = _dir;
+    }
+
     public MType getMType() throws MalformedPacketException {
         return MType.from(mhdr);
     }

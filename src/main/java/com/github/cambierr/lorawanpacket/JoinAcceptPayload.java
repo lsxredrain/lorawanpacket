@@ -57,6 +57,10 @@ public class JoinAcceptPayload implements FRMPayload {
         payload = new byte[_raw.remaining() - 4];
         _raw.get(payload);
     }
+    
+    public JoinAcceptPayload(MacPayload _mac) {
+        mac = _mac;
+    }
 
     @Override
     public int length() {

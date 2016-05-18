@@ -55,6 +55,10 @@ public class DataPayload implements FRMPayload {
         _raw.get(payload);
     }
 
+    public DataPayload(MacPayload _mac) {
+        mac = _mac;
+    }
+
     public byte[] computeMic() {
         if (nwkSKey == null) {
             throw new RuntimeException("undefined nwkSKey");

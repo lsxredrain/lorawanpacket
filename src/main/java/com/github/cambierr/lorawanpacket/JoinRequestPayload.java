@@ -55,8 +55,8 @@ public class JoinRequestPayload implements FRMPayload {
         _raw.get(devNonce);
     }
 
-    public JoinRequestPayload(byte[] _appKey) {
-        appKey = _appKey;
+    public JoinRequestPayload(MacPayload _mac) {
+        mac = _mac;
     }
 
     public byte[] computeMic() {

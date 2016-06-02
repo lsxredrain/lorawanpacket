@@ -174,7 +174,6 @@ public class DataPayload implements FRMPayload {
         for (int i = 0; i < _data.length; i++) {
             payload[i] = (byte) (s[i] ^ paddedPayload[i]);
         }
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 
@@ -184,7 +183,6 @@ public class DataPayload implements FRMPayload {
 
     public DataPayload setMac(MacPayload _mac) {
         this.mac = _mac;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 
@@ -194,7 +192,6 @@ public class DataPayload implements FRMPayload {
 
     public DataPayload setPayload(byte[] _payload) {
         this.payload = _payload;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 
@@ -205,7 +202,6 @@ public class DataPayload implements FRMPayload {
 
     public DataPayload setNwkSKey(byte[] _nwkSKey) {
         nwkSKey = _nwkSKey;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 

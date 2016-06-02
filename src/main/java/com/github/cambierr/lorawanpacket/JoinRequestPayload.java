@@ -100,7 +100,6 @@ public class JoinRequestPayload implements FRMPayload {
 
     public JoinRequestPayload setMac(MacPayload _mac) {
         this.mac = _mac;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 
@@ -110,7 +109,6 @@ public class JoinRequestPayload implements FRMPayload {
 
     public JoinRequestPayload setAppEUI(byte[] _appEUI) {
         this.appEUI = _appEUI;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 
@@ -120,7 +118,6 @@ public class JoinRequestPayload implements FRMPayload {
 
     public JoinRequestPayload setDevEUI(byte[] _devEUI) {
         this.devEUI = _devEUI;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 
@@ -130,13 +127,11 @@ public class JoinRequestPayload implements FRMPayload {
 
     public JoinRequestPayload setDevNonce(byte[] _devNonce) {
         this.devNonce = _devNonce;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 
     public JoinRequestPayload setAppKey(byte[] _appKey) {
         appKey = _appKey;
-        mac.getPhyPayload().setMic(computeMic());
         return this;
     }
 

@@ -57,6 +57,7 @@ public class DataPayload implements FRMPayload {
 
     public DataPayload(MacPayload _mac) {
         mac = _mac;
+        mac.setPayload(this);
     }
 
     public byte[] computeMic() {

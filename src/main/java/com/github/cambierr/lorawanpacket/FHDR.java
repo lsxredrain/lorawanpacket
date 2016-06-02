@@ -43,6 +43,10 @@ public class FHDR {
         fOpts = new byte[fCtrl & 0xf];
         _raw.get(fOpts);
     }
+    
+    public FHDR(){
+        
+    }
 
     public int length() {
         return devAddr.length + 1 + 2 + fOpts.length;

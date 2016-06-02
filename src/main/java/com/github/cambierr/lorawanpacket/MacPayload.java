@@ -62,6 +62,7 @@ public class MacPayload {
     
     public MacPayload(PhyPayload _phy){
         phy = _phy;
+        phy.setMacPayload(this);
     }
 
     public int length() {

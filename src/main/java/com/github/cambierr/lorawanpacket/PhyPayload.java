@@ -88,6 +88,7 @@ public class PhyPayload {
     }
 
     public void toRaw(ByteBuffer _bb) {
+        _bb.order(ByteOrder.LITTLE_ENDIAN);
         _bb.put(mhdr);
         macPayload.toRaw(_bb);
         _bb.put(mic);

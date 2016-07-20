@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

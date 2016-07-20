@@ -21,24 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 /**
  *
  * @author cambierr
  */
-public enum Direction {
-
-    DOWN(1),
-    UP(0);
-
-    private final byte value;
-
-    private Direction(int _i) {
-        value = (byte) _i;
-    }
-
-    public byte value() {
-        return value;
-    }
+public interface ProprietaryPayload extends FRMPayload{
+    
 }

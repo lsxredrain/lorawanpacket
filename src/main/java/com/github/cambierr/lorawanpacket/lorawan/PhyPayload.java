@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -34,22 +34,19 @@ public class PhyPayload {
 
     private byte mhdr;
     private MacPayload macPayload;
-    private Direction direction;
     private byte[] mic = new byte[4];
 
-    public PhyPayload(ByteBuffer _raw, Direction _dir) throws MalformedPacketException {
+    public PhyPayload(ByteBuffer _raw) throws MalformedPacketException {
         _raw.order(ByteOrder.LITTLE_ENDIAN);
         if (_raw.remaining() < 12) {
             throw new MalformedPacketException();
         }
-        direction = _dir;
         mhdr = _raw.get();
         macPayload = new MacPayload(this, _raw);
         _raw.get(mic);
     }
 
-    public PhyPayload(Direction _dir) {
-        direction = _dir;
+    public PhyPayload() {
     }
 
     public MType getMType() throws MalformedPacketException {
@@ -69,15 +66,6 @@ public class PhyPayload {
         return this;
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public PhyPayload setDirection(Direction _dir) {
-        direction = _dir;
-        return this;
-    }
-
     public MacPayload getMacPayload() {
         return macPayload;
     }
@@ -87,7 +75,7 @@ public class PhyPayload {
         return this;
     }
 
-    public void toRaw(ByteBuffer _bb) {
+    public void toRaw(ByteBuffer _bb) throws MalformedPacketException {
         _bb.order(ByteOrder.LITTLE_ENDIAN);
         _bb.put(mhdr);
         macPayload.toRaw(_bb);

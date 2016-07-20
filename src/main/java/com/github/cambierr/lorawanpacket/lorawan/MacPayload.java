@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
@@ -65,14 +65,14 @@ public class MacPayload {
         phy.setMacPayload(this);
     }
 
-    public int length() {
+    public int length() throws MalformedPacketException {
         if (payload == null) {
             return fhdr.length();
         }
         return fhdr.length() + 1 + payload.length();
     }
 
-    public void toRaw(ByteBuffer _bb) {
+    public void toRaw(ByteBuffer _bb) throws MalformedPacketException {
         fhdr.toRaw(_bb);
         if (payload != null) {
             _bb.put(fPort);

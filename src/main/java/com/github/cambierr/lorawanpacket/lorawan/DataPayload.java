@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -60,7 +60,7 @@ public class DataPayload implements FRMPayload {
         mac.setPayload(this);
     }
 
-    public byte[] computeMic() {
+    public byte[] computeMic() throws MalformedPacketException {
         if (nwkSKey == null) {
             throw new RuntimeException("undefined nwkSKey");
         }
@@ -70,7 +70,7 @@ public class DataPayload implements FRMPayload {
 
         body.put((byte) 0x49);
         body.put(new byte[]{0x00, 0x00, 0x00, 0x00});
-        body.put(mac.getPhyPayload().getDirection().value());
+        body.put(mac.getPhyPayload().getMType().getDirection().value());
         body.put(mac.getFhdr().getDevAddr());
         body.putInt(mac.getFhdr().getfCnt());
         body.put((byte) 0x00);
@@ -101,7 +101,7 @@ public class DataPayload implements FRMPayload {
         _bb.put(payload);
     }
 
-    public byte[] getClearPayLoad() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] getClearPayLoad() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, MalformedPacketException {
         byte[] key;
         if (mac.getfPort() == 0) {
             if (nwkSKey == null) {
@@ -120,7 +120,7 @@ public class DataPayload implements FRMPayload {
         for (int i = 1; i <= k; i++) {
             a.put((byte) 0x01);
             a.put(new byte[]{0x00, 0x00, 0x00, 0x00});
-            a.put(mac.getPhyPayload().getDirection().value());
+            a.put(mac.getPhyPayload().getMType().getDirection().value());
             a.put(mac.getFhdr().getDevAddr());
             a.putInt(mac.getFhdr().getfCnt());
             a.put((byte) 0x00);
@@ -139,7 +139,7 @@ public class DataPayload implements FRMPayload {
         return plainPayload;
     }
 
-    public DataPayload setClearPayLoad(byte[] _data) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public DataPayload setClearPayLoad(byte[] _data) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, MalformedPacketException {
         byte[] key;
         if (mac.getfPort() == 0) {
             if (nwkSKey == null) {
@@ -158,7 +158,7 @@ public class DataPayload implements FRMPayload {
         for (int i = 1; i <= k; i++) {
             a.put((byte) 0x01);
             a.put(new byte[]{0x00, 0x00, 0x00, 0x00});
-            a.put(mac.getPhyPayload().getDirection().value());
+            a.put(mac.getPhyPayload().getMType().getDirection().value());
             a.put(mac.getFhdr().getDevAddr());
             a.putInt(mac.getFhdr().getfCnt());
             a.put((byte) 0x00);
@@ -196,7 +196,7 @@ public class DataPayload implements FRMPayload {
     }
 
     @Override
-    public boolean validateMic() {
+    public boolean validateMic() throws MalformedPacketException {
         return Arrays.equals(computeMic(), mac.getPhyPayload().getMic());
     }
 

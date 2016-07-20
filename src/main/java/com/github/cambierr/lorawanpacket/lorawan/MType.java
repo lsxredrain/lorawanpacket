@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 /**
  *
@@ -29,22 +29,24 @@ package com.github.cambierr.lorawanpacket;
  */
 public enum MType {
 
-    JOIN_REQUEST((byte) 0x00, JoinRequestPayload.class),
-    JOIN_ACCEPT((byte) 0x01, JoinAcceptPayload.class),
-    UNCONF_DATA_UP((byte) 0x02, DataPayload.class),
-    UNCONF_DATA_DOWN((byte) 0x03, DataPayload.class),
-    CONF_DATA_UP((byte) 0x04, DataPayload.class),
-    CONF_DATA_DOWN((byte) 0x05, DataPayload.class),
-    RFU((byte) 0x06, RFUPayload.class),
-    PROPRIETARY((byte) 0x07, ProprietaryPayload.class);
+    JOIN_REQUEST((byte) 0x00, JoinRequestPayload.class, Direction.UP),
+    JOIN_ACCEPT((byte) 0x01, JoinAcceptPayload.class, Direction.DOWN),
+    UNCONF_DATA_UP((byte) 0x02, DataPayload.class, Direction.UP),
+    UNCONF_DATA_DOWN((byte) 0x03, DataPayload.class, Direction.DOWN),
+    CONF_DATA_UP((byte) 0x04, DataPayload.class, Direction.UP),
+    CONF_DATA_DOWN((byte) 0x05, DataPayload.class, Direction.DOWN),
+    RFU((byte) 0x06, RFUPayload.class, null),
+    PROPRIETARY((byte) 0x07, ProprietaryPayload.class, null);
 
-    private MType(byte _value, Class<? extends FRMPayload> _mapper) {
+    private MType(byte _value, Class<? extends FRMPayload> _mapper, Direction _direction) {
         value = _value;
         mapper = _mapper;
+        direction = _direction;
     }
 
     private final byte value;
     private final Class<? extends FRMPayload> mapper;
+    private final Direction direction;
 
     public static MType from(byte _mhdr) throws MalformedPacketException {
         byte mType = (byte) ((_mhdr >> 5) & 0x07);
@@ -54,6 +56,10 @@ public enum MType {
             }
         }
         throw new MalformedPacketException("MType");
+    }
+    
+    public Direction getDirection(){
+        return direction;
     }
 
     public Class<? extends FRMPayload> getMapper() {

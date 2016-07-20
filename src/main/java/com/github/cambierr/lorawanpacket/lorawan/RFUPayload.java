@@ -21,30 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 /**
  *
  * @author cambierr
  */
-public enum MajorVersion {
-
-    LORAWAN_R_1((byte) 0);
-
-    private final byte identifier;
-
-    private MajorVersion(byte _identifier) {
-        identifier = _identifier;
-    }
-
-    public static MajorVersion from(byte _mhdr) throws MalformedPacketException {
-        byte mVersion = (byte) -(_mhdr & 0x03);
-        for (MajorVersion v : values()) {
-            if (v.identifier == mVersion) {
-                return v;
-            }
-        }
-        throw new MalformedPacketException("Major");
-    }
-
+public interface RFUPayload extends FRMPayload{
+    
 }

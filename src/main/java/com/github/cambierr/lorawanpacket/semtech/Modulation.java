@@ -21,26 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.semtech;
+
+import com.github.cambierr.lorawanpacket.lorawan.MalformedPacketException;
 
 /**
  *
  * @author cambierr
  */
-public class MalformedPacketException extends Exception {
-
-    /**
-     * Creates a new instance of <code>MalformedPacketException</code> without detail message.
-     */
-    public MalformedPacketException() {
+public enum Modulation {
+    
+    FSK,
+    LORA;
+    
+    
+    
+    public static Modulation parse(String _str) throws MalformedPacketException{
+        try{
+            return valueOf(_str);
+        } catch(IllegalArgumentException ex){
+            throw new MalformedPacketException("malformed modu");
+        }
     }
-
-    /**
-     * Constructs an instance of <code>MalformedPacketException</code> with the specified detail message.
-     *
-     * @param msg the detail message.
-     */
-    public MalformedPacketException(String msg) {
-        super(msg);
-    }
+        
+        
+    
 }

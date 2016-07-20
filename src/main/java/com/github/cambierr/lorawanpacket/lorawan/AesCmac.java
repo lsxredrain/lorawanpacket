@@ -22,7 +22,7 @@
  * 
  * Modifications by Romain Cambier <me@romaincambier.be>
  */
-package com.github.cambierr.lorawanpacket;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

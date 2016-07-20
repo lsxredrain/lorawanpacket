@@ -21,19 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.github.cambierr.lorawanpacket;
-
-import java.nio.ByteBuffer;
+package com.github.cambierr.lorawanpacket.lorawan;
 
 /**
  *
  * @author cambierr
  */
-public interface FRMPayload {
+public class MalformedPacketException extends Exception {
 
-    public boolean validateMic();
-    
-    public int length();
-    
-    public void toRaw(ByteBuffer _bb);
+    /**
+     * Creates a new instance of <code>MalformedPacketException</code> without
+     * detail message.
+     */
+    public MalformedPacketException() {
+    }
+
+    /**
+     * Constructs an instance of <code>MalformedPacketException</code> with the
+     * specified detail message.
+     *
+     * @param msg the detail message.
+     */
+    public MalformedPacketException(String msg) {
+        super(msg);
+    }
+
+    public MalformedPacketException(Exception e) {
+        super(e);
+    }
 }

@@ -363,7 +363,7 @@ public class Rxpk {
 
     }
 
-    public JSONObject toJson() {
+    public JSONObject toJson() throws MalformedPacketException {
         JSONObject output = new JSONObject();
 
         time = null;
@@ -386,7 +386,7 @@ public class Rxpk {
         output.put("chan", chan);
         output.put("rfch", rfch);
         output.put("stat", stat);
-        output.put("modu", modu);
+        output.put("modu", modu.name());
         
         if (modu.equals(Modulation.LORA)) {
             output.put("codr", codr);

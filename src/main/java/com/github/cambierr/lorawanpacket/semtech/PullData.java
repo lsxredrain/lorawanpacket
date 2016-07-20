@@ -24,42 +24,58 @@
 package com.github.cambierr.lorawanpacket.semtech;
 
 import com.github.cambierr.lorawanpacket.lorawan.MalformedPacketException;
+import java.nio.ByteBuffer;
 
 /**
  *
  * @author cambierr
  */
-public enum PacketType {
+public class PullData extends SemtechPacket {
 
-    PUSH_DATA((byte) 0x00, PushData.class),
-    PUSH_ACK((byte) 0x01, PushAck.class),
-    PULL_DATA((byte) 0x02, PullData.class),
-    PULL_ACK((byte) 0x04, PullAck.class),
-    PULL_RESP((byte) 0x03, PullResp.class),
-    TX_ACK((byte) 0x05, TxAck.class);
+    private byte[] gatewayEui;
 
-    private PacketType(byte _value, Class<? extends SemtechPacket> _mapper) {
-        value = _value;
-        mapper = _mapper;
-    }
+    public PullData(byte[] _randoms, ByteBuffer _raw) throws MalformedPacketException {
+        super(_randoms, PacketType.PULL_DATA);
 
-    private final byte value;
-    private final Class<? extends SemtechPacket> mapper;
-
-    public static PacketType from(byte _identifier) throws MalformedPacketException {
-        for (PacketType v : values()) {
-            if (v.value == _identifier) {
-                return v;
-            }
+        if (_raw.remaining() < 8) {
+            throw new MalformedPacketException("too short");
         }
-        throw new MalformedPacketException("PacketType");
+
+        gatewayEui = new byte[8];
+        _raw.get(gatewayEui);
     }
 
-    public Class<? extends SemtechPacket> getMapper() {
-        return mapper;
+    private PullData(byte[] _randoms) {
+        super(_randoms, PacketType.PULL_ACK);
     }
-    
-    public byte getValue(){
-         return value;
+
+    public static class Builder {
+
+        private final PullData instance;
+
+        public Builder(byte[] _randoms) {
+            instance = new PullData(_randoms);
+        }
+
+        public Builder setGatewayEui(byte[] _gatewayEui) {
+            instance.gatewayEui = _gatewayEui;
+            return this;
+        }
+
+        public PullData build() {
+            return instance;
+        }
+
     }
+
+    public byte[] getGatewayEui() {
+        return gatewayEui;
+    }
+
+    @Override
+    public void toRaw(ByteBuffer _bb) throws MalformedPacketException {
+        super.toRaw(_bb);
+        _bb.put(gatewayEui);
+    }
+
 }

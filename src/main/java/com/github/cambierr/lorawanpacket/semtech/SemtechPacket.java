@@ -35,8 +35,8 @@ import java.nio.ByteOrder;
 public abstract class SemtechPacket {
 
     private byte version;
-    private byte[] randoms;
-    private PacketType identifier;
+    private final byte[] randoms;
+    private final PacketType identifier;
 
     protected SemtechPacket(byte[] _randoms, PacketType _identifier) {
         randoms = _randoms;
@@ -80,7 +80,7 @@ public abstract class SemtechPacket {
         return identifier;
     }
     
-    public void toRaw(ByteBuffer _bb){
+    public void toRaw(ByteBuffer _bb) throws MalformedPacketException{
         _bb.put((byte)0x02);
         _bb.put(randoms);
         _bb.put(identifier.getValue());

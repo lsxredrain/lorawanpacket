@@ -91,8 +91,12 @@ public class PushData extends SemtechPacket {
 
     }
 
+    private PushData(byte[] _randoms) {
+        super(_randoms, PacketType.PUSH_DATA);
+    }
+
     @Override
-    public void toRaw(ByteBuffer _bb) {
+    public void toRaw(ByteBuffer _bb) throws MalformedPacketException {
         super.toRaw(_bb);
         _bb.put(gatewayEui);
 
@@ -125,6 +129,35 @@ public class PushData extends SemtechPacket {
 
     public List<Rxpk> getRxpks() {
         return Collections.unmodifiableList(rxpks);
+    }
+
+    public static class Builder {
+
+        private final PushData instance;
+
+        public Builder(byte[] _randoms) {
+            instance = new PushData(_randoms);
+        }
+
+        public PushData build() {
+            return instance;
+        }
+
+        public Builder setGatewayEui(byte[] _gatewayEui) {
+            instance.gatewayEui = _gatewayEui;
+            return this;
+        }
+
+        public Builder setStats(List<Stat> _stats) {
+            instance.stats = _stats;
+            return this;
+        }
+
+        public Builder setRxpks(List<Rxpk> _rxpks) {
+            instance.rxpks = _rxpks;
+            return this;
+        }
+
     }
 
 }

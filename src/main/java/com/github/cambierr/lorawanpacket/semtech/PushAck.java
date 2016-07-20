@@ -23,43 +23,34 @@
  */
 package com.github.cambierr.lorawanpacket.semtech;
 
-import com.github.cambierr.lorawanpacket.lorawan.MalformedPacketException;
+import java.nio.ByteBuffer;
 
 /**
  *
  * @author cambierr
  */
-public enum PacketType {
-
-    PUSH_DATA((byte) 0x00, PushData.class),
-    PUSH_ACK((byte) 0x01, PushAck.class),
-    PULL_DATA((byte) 0x02, PullData.class),
-    PULL_ACK((byte) 0x04, PullAck.class),
-    PULL_RESP((byte) 0x03, PullResp.class),
-    TX_ACK((byte) 0x05, TxAck.class);
-
-    private PacketType(byte _value, Class<? extends SemtechPacket> _mapper) {
-        value = _value;
-        mapper = _mapper;
-    }
-
-    private final byte value;
-    private final Class<? extends SemtechPacket> mapper;
-
-    public static PacketType from(byte _identifier) throws MalformedPacketException {
-        for (PacketType v : values()) {
-            if (v.value == _identifier) {
-                return v;
-            }
-        }
-        throw new MalformedPacketException("PacketType");
-    }
-
-    public Class<? extends SemtechPacket> getMapper() {
-        return mapper;
+public class PushAck extends SemtechPacket{
+    
+    public PushAck(byte[] _randoms, ByteBuffer _raw) {
+        super(_randoms, PacketType.PUSH_ACK);
     }
     
-    public byte getValue(){
-         return value;
+    private PushAck(byte[] _randoms) {
+        super(_randoms, PacketType.PUSH_ACK);
     }
+    
+    public static class Builder{
+        
+        private final PushAck instance;
+        
+        public Builder(byte[] _randoms){
+            instance = new PushAck(_randoms);
+        }
+        
+        public PushAck build(){
+            return instance;
+        }
+        
+    }
+    
 }

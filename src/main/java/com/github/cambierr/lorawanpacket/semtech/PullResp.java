@@ -23,19 +23,99 @@
  */
 package com.github.cambierr.lorawanpacket.semtech;
 
+import com.github.cambierr.lorawanpacket.lorawan.MalformedPacketException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author cambierr
  */
-public class PullResp extends SemtechPacket{
-    
-    public PullResp(byte[] _randoms, ByteBuffer _raw) {
+public class PullResp extends SemtechPacket {
+
+    private List<Txpk> txpks;
+
+    public PullResp(byte[] _randoms, ByteBuffer _raw) throws MalformedPacketException {
         super(_randoms, PacketType.PULL_RESP);
-        /**
-         * @todo: implement data & logic
-         */
+        _raw.order(ByteOrder.LITTLE_ENDIAN);
+
+        if (_raw.remaining() < 1) {
+            throw new MalformedPacketException("too short");
+        }
+
+        byte[] json = new byte[_raw.remaining()];
+        _raw.get(json);
+        JSONObject jo;
+
+        try {
+            jo = new JSONObject(new String(json));
+        } catch (JSONException ex) {
+            throw new MalformedPacketException("malformed json");
+        }
+
+        txpks = new ArrayList<>();
+
+        if (!jo.has("txpk")) {
+            throw new MalformedPacketException("missing json (txpk)");
+        }
+
+        if (!jo.get("txpk").getClass().equals(JSONArray.class)) {
+            throw new MalformedPacketException("malformed json (txpk)");
+        }
+        JSONArray rxpk = jo.getJSONArray("txpk");
+
+        for (int i = 0; i < rxpk.length(); i++) {
+            txpks.add(new Txpk(rxpk.getJSONObject(i)));
+        }
     }
-    
+
+    private PullResp(byte[] _randoms) {
+        super(_randoms, PacketType.PULL_RESP);
+    }
+
+    public List<Txpk> getTxpks() {
+        return Collections.unmodifiableList(txpks);
+    }
+
+    public static class Builder {
+
+        private final PullResp instance;
+
+        public Builder(byte[] _randoms) {
+            instance = new PullResp(_randoms);
+        }
+
+        public PullResp build() {
+            return instance;
+        }
+
+        public Builder setRxpks(List<Txpk> _txpks) {
+            instance.txpks = _txpks;
+            return this;
+        }
+
+    }
+
+    @Override
+    public void toRaw(ByteBuffer _bb) throws MalformedPacketException {
+        super.toRaw(_bb);
+
+        JSONObject json = new JSONObject();
+        if (!txpks.isEmpty()) {
+            JSONArray txpk = new JSONArray();
+            for (Txpk s : txpks) {
+                txpk.put(s.toJson());
+            }
+            json.put("txpk", txpks);
+        }
+
+        _bb.put(json.toString().getBytes());
+    }
+
 }

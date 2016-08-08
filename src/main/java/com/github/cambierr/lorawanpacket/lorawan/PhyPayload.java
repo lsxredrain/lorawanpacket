@@ -92,3 +92,7 @@ public class PhyPayload {
     }
 
 }
+
+/**
+ * @todo: remove setters and add builders with checks
+ */

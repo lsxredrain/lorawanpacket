@@ -98,7 +98,7 @@ public class TxAck extends SemtechPacket {
             instance = new TxAck(_randoms);
         }
 
-        public Builder setErro(Error _error) {
+        public Builder setError(Error _error) {
             instance.error = _error;
             return this;
         }

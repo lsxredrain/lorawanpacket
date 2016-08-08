@@ -45,15 +45,15 @@ public class Stat {
 
     private Stat() {
         time = null;
-        lati = Double.MIN_VALUE;
-        longi = Double.MIN_VALUE;
-        alti = Integer.MIN_VALUE;
-        rxnb = Integer.MIN_VALUE;
-        rxok = Integer.MIN_VALUE;
-        rxfw = Integer.MIN_VALUE;
-        ackr = Integer.MIN_VALUE;
-        dwnb = Integer.MIN_VALUE;
-        txnb = Integer.MIN_VALUE;
+        lati = Double.MAX_VALUE;
+        longi = Double.MAX_VALUE;
+        alti = Integer.MAX_VALUE;
+        rxnb = Integer.MAX_VALUE;
+        rxok = Integer.MAX_VALUE;
+        rxfw = Integer.MAX_VALUE;
+        ackr = Integer.MAX_VALUE;
+        dwnb = Integer.MAX_VALUE;
+        txnb = Integer.MAX_VALUE;
     }
 
     public Stat(JSONObject _json) throws MalformedPacketException {
@@ -71,7 +71,7 @@ public class Stat {
          * lati
          */
         if (!_json.has("lati")) {
-            lati = Double.MIN_VALUE;
+            lati = Double.MAX_VALUE;
         } else {
             lati = _json.getDouble("lati");
         }
@@ -80,7 +80,7 @@ public class Stat {
          * longi
          */
         if (!_json.has("longi")) {
-            lati = Double.MIN_VALUE;
+            lati = Double.MAX_VALUE;
         } else {
             longi = _json.getDouble("longi");
         }
@@ -89,7 +89,7 @@ public class Stat {
          * alti
          */
         if (!_json.has("alti")) {
-            alti = Integer.MIN_VALUE;
+            alti = Integer.MAX_VALUE;
         } else {
             alti = _json.getInt("alti");
         }
@@ -98,7 +98,7 @@ public class Stat {
          * rxnb
          */
         if (!_json.has("rxnb")) {
-            throw new MalformedPacketException("missing rxnb");
+            rxnb = Integer.MAX_VALUE;
         } else {
             rxnb = _json.getInt("rxnb");
         }
@@ -107,7 +107,7 @@ public class Stat {
          * rxok
          */
         if (!_json.has("rxok")) {
-            throw new MalformedPacketException("missing rxok");
+            rxok = Integer.MAX_VALUE;
         } else {
             rxok = _json.getInt("rxok");
         }
@@ -116,7 +116,7 @@ public class Stat {
          * rxfw
          */
         if (!_json.has("rxfw")) {
-            throw new MalformedPacketException("missing rxfw");
+            rxfw = Integer.MAX_VALUE;
         } else {
             rxfw = _json.getInt("rxfw");
         }
@@ -125,7 +125,7 @@ public class Stat {
          * ackr
          */
         if (!_json.has("ackr")) {
-            throw new MalformedPacketException("missing ackr");
+            ackr = Integer.MAX_VALUE;
         } else {
             ackr = _json.getInt("ackr");
         }
@@ -134,7 +134,7 @@ public class Stat {
          * dwnb
          */
         if (!_json.has("dwnb")) {
-            throw new MalformedPacketException("missing dwnb");
+            dwnb = Integer.MAX_VALUE;
         } else {
             dwnb = _json.getInt("dwnb");
         }
@@ -143,7 +143,7 @@ public class Stat {
          * txnb
          */
         if (!_json.has("txnb")) {
-            throw new MalformedPacketException("missing txnb");
+            txnb = Integer.MAX_VALUE;
         } else {
             txnb = _json.getInt("txnb");
         }
@@ -204,6 +204,9 @@ public class Stat {
         }
 
         public Builder setTime(String _time) {
+            /**
+             * @todo: validate time format
+             */
             instance.time = _time;
             return this;
         }
@@ -282,22 +285,55 @@ public class Stat {
         }
 
     }
-    
-    public JSONObject toJson(){
-        
+
+    public JSONObject toJson() {
+
         JSONObject output = new JSONObject();
-        
-        output.put("time", time);
-        output.put("lati", lati);
-        output.put("long", longi);
-        output.put("alti", alti);
-        output.put("rxnb", rxnb);
-        output.put("rxok", rxok);
-        output.put("rxfw", rxfw);
-        output.put("ackr", ackr);
-        output.put("dwnb", dwnb);
-        output.put("txnb", txnb);
-        
+
+        if (time != null) {
+            output.put("time", time);
+        }
+
+        if (lati != Double.MAX_VALUE) {
+            output.put("lati", lati);
+        }
+
+        if (longi != Double.MAX_VALUE) {
+            output.put("longi", longi);
+        }
+
+        if (alti != Integer.MAX_VALUE) {
+            output.put("alti", alti);
+        }
+
+        if (rxnb != Integer.MAX_VALUE) {
+            output.put("rxnb", rxnb);
+        }
+
+        if (rxok != Integer.MAX_VALUE) {
+            output.put("rxok", rxok);
+        }
+
+        if (rxfw != Integer.MAX_VALUE) {
+            output.put("rxfw", rxfw);
+        }
+
+        if (ackr != Integer.MAX_VALUE) {
+            output.put("ackr", ackr);
+        }
+
+        if (ackr != Integer.MAX_VALUE) {
+            output.put("ackr", ackr);
+        }
+
+        if (dwnb != Integer.MAX_VALUE) {
+            output.put("dwnb", dwnb);
+        }
+
+        if (txnb != Integer.MAX_VALUE) {
+            output.put("txnb", txnb);
+        }
+
         return output;
     }
 }

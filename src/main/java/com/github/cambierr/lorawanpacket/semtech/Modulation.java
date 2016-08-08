@@ -30,20 +30,16 @@ import com.github.cambierr.lorawanpacket.lorawan.MalformedPacketException;
  * @author cambierr
  */
 public enum Modulation {
-    
+
     FSK,
     LORA;
-    
-    
-    
-    public static Modulation parse(String _str) throws MalformedPacketException{
-        try{
+
+    public static Modulation parse(String _str) throws MalformedPacketException {
+        try {
             return valueOf(_str);
-        } catch(IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             throw new MalformedPacketException("malformed modu");
         }
     }
-        
-        
-    
+
 }

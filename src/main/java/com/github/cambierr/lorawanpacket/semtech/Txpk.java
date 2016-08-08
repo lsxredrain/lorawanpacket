@@ -34,29 +34,40 @@ import org.json.JSONObject;
  *
  * @author cambierr
  */
-public class Rxpk {
+public class Txpk {
 
-    private String time;
+    private boolean imme;
     private int tmst;
+    private String time;
     private double freq;
-    private int chan;
     private int rfch;
-    private int stat;
+    private int powe;
     private Modulation modu;
     private Object datr;
     private String codr;
-    private int rssi;
-    private double lsnr;
+    private int fdev;
+    private boolean ipol;
+    private int prea;
     private int size;
     private PhyPayload data;
+    private boolean ncrc;
 
-    public Rxpk(JSONObject _json) throws MalformedPacketException {
+    public Txpk(JSONObject _json) throws MalformedPacketException {
+
+        /**
+         * imme
+         */
+        if (!_json.has("imme")) {
+            imme = false;
+        } else {
+            imme = _json.getBoolean("imme");
+        }
 
         /**
          * tmst
          */
         if (!_json.has("tmst")) {
-            throw new MalformedPacketException("missing tmst");
+            tmst = Integer.MAX_VALUE;
         } else {
             tmst = _json.getInt("tmst");
         }
@@ -65,18 +76,9 @@ public class Rxpk {
          * time
          */
         if (!_json.has("time")) {
-            throw new MalformedPacketException("missing time");
+            time = null;
         } else {
             time = _json.getString("time");
-        }
-
-        /**
-         * chan
-         */
-        if (!_json.has("chan")) {
-            throw new MalformedPacketException("missing chan");
-        } else {
-            chan = _json.getInt("chan");
         }
 
         /**
@@ -98,15 +100,12 @@ public class Rxpk {
         }
 
         /**
-         * stat
+         * powe
          */
-        if (!_json.has("stat")) {
-            throw new MalformedPacketException("missing stat");
+        if (!_json.has("powe")) {
+            throw new MalformedPacketException("missing powe");
         } else {
-            stat = _json.getInt("stat");
-            if (stat > 1 || stat < -1) {
-                throw new MalformedPacketException("stat must be equal to -1, 0, or 1");
-            }
+            powe = _json.getInt("powe");
         }
 
         /**
@@ -148,25 +147,38 @@ public class Rxpk {
         }
 
         /**
-         * rssi
+         * fdev
          */
-        if (!_json.has("rssi")) {
-            throw new MalformedPacketException("missing rssi");
+        if (!_json.has("fdev")) {
+            if (modu.equals(Modulation.LORA)) {
+                fdev = Integer.MAX_VALUE;
+            } else {
+                throw new MalformedPacketException("missing fdev");
+            }
         } else {
-            rssi = _json.getInt("rssi");
+            fdev = _json.getInt("fdev");
         }
 
         /**
-         * lsnr
+         * ipol
          */
-        if (!_json.has("lsnr")) {
+        if (!_json.has("ipol")) {
             if (modu.equals(Modulation.FSK)) {
-                lsnr = Double.MAX_VALUE;
+                ipol = false;
             } else {
-                throw new MalformedPacketException("missing lsnr");
+                throw new MalformedPacketException("missing ipol");
             }
         } else {
-            lsnr = _json.getDouble("lsnr");
+            ipol = _json.getBoolean("ipol");
+        }
+
+        /**
+         * prea
+         */
+        if (!_json.has("prea")) {
+            throw new MalformedPacketException("missing prea");
+        } else {
+            prea = _json.getInt("prea");
         }
 
         /**
@@ -194,82 +206,51 @@ public class Rxpk {
 
             data = new PhyPayload(ByteBuffer.wrap(raw));
         }
+
+        /**
+         * ncrc
+         */
+        if (!_json.has("ncrc")) {
+            ncrc = false;
+        } else {
+            ncrc = _json.getBoolean("ncrc");
+        }
     }
 
-    private Rxpk() {
+    private Txpk() {
+        imme = false;
+        tmst = Integer.MIN_VALUE;
         time = null;
-        tmst = Integer.MAX_VALUE;
-        freq = Double.MAX_VALUE;
-        chan = Integer.MAX_VALUE;
-        rfch = Integer.MAX_VALUE;
-        stat = Integer.MAX_VALUE;
+        freq = Double.MIN_VALUE;
+        rfch = Integer.MIN_VALUE;
+        powe = Integer.MIN_VALUE;
         modu = null;
         datr = null;
         codr = null;
-        rssi = Integer.MAX_VALUE;
-        lsnr = Double.MAX_VALUE;
-        size = Integer.MAX_VALUE;
+        fdev = Integer.MIN_VALUE;
+        ipol = false;
+        prea = Integer.MIN_VALUE;
+        size = Integer.MIN_VALUE;
         data = null;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public int getTmst() {
-        return tmst;
-    }
-
-    public double getFreq() {
-        return freq;
-    }
-
-    public int getChan() {
-        return chan;
-    }
-
-    public int getRfch() {
-        return rfch;
-    }
-
-    public int getStat() {
-        return stat;
-    }
-
-    public Modulation getModu() {
-        return modu;
-    }
-
-    public Object getDatr() {
-        return datr;
-    }
-
-    public String getCodr() {
-        return codr;
-    }
-
-    public int getRssi() {
-        return rssi;
-    }
-
-    public double getLsnr() {
-        return lsnr;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public PhyPayload getData() {
-        return data;
+        ncrc = false;
     }
 
     public static class Builder {
 
-        private final Rxpk instance;
+        private final Txpk instance;
 
         public Builder() {
-            instance = new Rxpk();
+            instance = new Txpk();
+        }
+
+        public Builder setImme(boolean _imme) {
+            instance.imme = _imme;
+            return this;
+        }
+
+        public Builder setTmst(int _tmst) {
+            instance.tmst = _tmst;
+            return this;
         }
 
         public Builder setTime(String _time) {
@@ -280,18 +261,8 @@ public class Rxpk {
             return this;
         }
 
-        public Builder setTmst(int _tmst) {
-            instance.tmst = _tmst;
-            return this;
-        }
-
         public Builder setFreq(double _freq) {
             instance.freq = _freq;
-            return this;
-        }
-
-        public Builder setChan(int _chan) {
-            instance.chan = _chan;
             return this;
         }
 
@@ -300,11 +271,8 @@ public class Rxpk {
             return this;
         }
 
-        public Builder setStat(int _stat) {
-            if (_stat > 1 || _stat < -1) {
-                throw new IllegalArgumentException("stat must be equal to -1, 0, or 1");
-            }
-            instance.stat = _stat;
+        public Builder setPowe(int _powe) {
+            instance.powe = _powe;
             return this;
         }
 
@@ -337,16 +305,24 @@ public class Rxpk {
             return this;
         }
 
-        public Builder setRssi(int _rssi) {
-            instance.rssi = _rssi;
+        public Builder setFdev(int _fdev) {
+            if (instance.getModu() == null || instance.getModu().equals(Modulation.LORA)) {
+                throw new IllegalArgumentException("fdev shoud be used for FSK modulation");
+            }
+            instance.fdev = _fdev;
             return this;
         }
 
-        public Builder setLsnr(double _lsnr) {
+        public Builder setIpol(boolean _ipol) {
             if (instance.getModu() == null || instance.getModu().equals(Modulation.FSK)) {
-                throw new IllegalArgumentException("lsnr shoud be used for LORA modulation");
+                throw new IllegalArgumentException("ipol shoud be used for LORA modulation");
             }
-            instance.lsnr = _lsnr;
+            instance.ipol = _ipol;
+            return this;
+        }
+
+        public Builder setPrea(int _prea) {
+            instance.prea = _prea;
             return this;
         }
 
@@ -360,40 +336,107 @@ public class Rxpk {
             return this;
         }
 
-        public Rxpk build() {
+        public Builder setNcrc(boolean _ncrc) {
+            instance.ncrc = _ncrc;
+            return this;
+        }
+
+        public Txpk build() {
             /**
              * @todo: validate config ?
              */
             return instance;
         }
-
     }
 
     public JSONObject toJson() throws MalformedPacketException {
         JSONObject output = new JSONObject();
 
-        output.put("time", time);
-        output.put("tmst", tmst);
-        output.put("freq", freq);
-        output.put("chan", chan);
-        output.put("rfch", rfch);
-        output.put("stat", stat);
-        output.put("modu", modu.name());
+        output.put("imme", isImme());
+        output.put("tmst", getTmst());
+        output.put("time", getTime());
+        output.put("freq", getFreq());
+        output.put("rfch", getRfch());
+        output.put("powe", getPowe());
+        output.put("modu", getModu().name());
 
-        if (modu.equals(Modulation.LORA)) {
-            output.put("codr", codr);
-            output.put("lsnr", lsnr);
+        if (getModu().equals(Modulation.LORA)) {
+            output.put("codr", getCodr());
+            output.put("ipol", isIpol());
+        } else {
+            output.put("fdev", getFdev());
         }
 
-        output.put("datr", datr);
-        output.put("rssi", rssi);
-        output.put("size", size);
+        output.put("datr", getDatr());
+        output.put("prea", getPrea());
+        output.put("size", getSize());
+        output.put("ncrc", isNcrc());
 
         ByteBuffer bb = ByteBuffer.allocate(384);
-        data.toRaw(bb);
+        getData().toRaw(bb);
         output.put("data", Base64.getEncoder().encodeToString(Arrays.copyOfRange(bb.array(), 0, bb.capacity() - bb.remaining())));
 
         return output;
+    }
+
+    public boolean isImme() {
+        return imme;
+    }
+
+    public int getTmst() {
+        return tmst;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public double getFreq() {
+        return freq;
+    }
+
+    public int getRfch() {
+        return rfch;
+    }
+
+    public int getPowe() {
+        return powe;
+    }
+
+    public Modulation getModu() {
+        return modu;
+    }
+
+    public Object getDatr() {
+        return datr;
+    }
+
+    public String getCodr() {
+        return codr;
+    }
+
+    public int getFdev() {
+        return fdev;
+    }
+
+    public boolean isIpol() {
+        return ipol;
+    }
+
+    public int getPrea() {
+        return prea;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public PhyPayload getData() {
+        return data;
+    }
+
+    public boolean isNcrc() {
+        return ncrc;
     }
 
 }

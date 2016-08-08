@@ -58,8 +58,8 @@ public enum PacketType {
     public Class<? extends SemtechPacket> getMapper() {
         return mapper;
     }
-    
-    public byte getValue(){
-         return value;
+
+    public byte getValue() {
+        return value;
     }
 }
